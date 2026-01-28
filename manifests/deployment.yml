@@ -1,19 +1,19 @@
 apiVersion : apps/v1
 kind: Deployment
 metadata:
-  name: appnginx 
+  name: app1nginx 
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: appnginx
+      app: app1nginx
   template:
     metadata:
       labels:
-        app: appnginx 
+        app: app1nginx 
     spec:
       containers:
-        - name: appnginx 
-          image: rgacrdev01.azurecr.io/appnginx
+        - name: app1nginx 
+          image: rgacrdev01.azurecr.io/app1nginx
           ports:
           - containerPort: 80

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: app1-nginx
-          image: rgacrdev01.azurecr.io/app1/app1nginx:v1
+          image: rgacrdev01.azurecr.io/app1nginx:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 80
