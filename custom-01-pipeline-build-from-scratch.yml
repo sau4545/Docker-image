@@ -19,8 +19,7 @@ stages:
         repository: 'app1nginx'
         command: 'buildAndPush'
         Dockerfile: '**/Dockerfile'
-        tags: |
-          $tag
+        tags: 'latest'
     - task: CopyFiles@2
       inputs:
         SourceFolder: '$(System.DefaultWorkingDirectory)/kube-manifests'
