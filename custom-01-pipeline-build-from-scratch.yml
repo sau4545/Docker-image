@@ -28,7 +28,7 @@ stages:
     - task: CopyFiles@2
       displayName: Copy Kubernetes manifests
       inputs:
-        SourceFolder: '$(System.DefaultWorkingDirectory)/Docker-image'
+        SourceFolder: '$(System.DefaultWorkingDirectory)'
         Contents: '**'
         TargetFolder: '$(Build.ArtifactStagingDirectory)'
         OverWrite: true
