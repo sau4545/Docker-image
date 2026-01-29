@@ -2,8 +2,8 @@ trigger:
 - master
 
 variables:
-  tag: '$(Build.BuildId)'
-  tag1: 'latest'
+  tag: $(Build.BuildId)
+  latestTag: latest
 
 stages:
 - stage: Build
@@ -12,22 +12,30 @@ stages:
   - job: Build
     displayName: Build job
     pool:
-     vmImage: ubuntu-latest
+      vmImage: ubuntu-latest
+
     steps:
     - task: Docker@2
+      displayName: Build and Push Image
       inputs:
         containerRegistry: 'rgacrdev01'
         repository: 'app1nginx'
         command: 'buildAndPush'
-        Dockerfile: '**/Dockerfile'
-        tags: $tag1
+        Dockerfile: 'Dockerfile'
+        tags: |
+          $(tag)
+          $(latestTag)
+
     - task: CopyFiles@2
+      displayName: Copy Kubernetes manifests
       inputs:
         SourceFolder: '$(System.DefaultWorkingDirectory)/kube-manifests'
         Contents: '**'
         TargetFolder: '$(Build.ArtifactStagingDirectory)'
         OverWrite: true
+
     - task: PublishBuildArtifacts@1
+      displayName: Publish manifests
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'kube-manifests'
