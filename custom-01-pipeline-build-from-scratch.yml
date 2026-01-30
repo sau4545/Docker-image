@@ -2,38 +2,52 @@ trigger:
 - master
 
 variables:
-  tag: $(Build.BuildId)
-  latestTag: latest
+  imageName: app1nginx
+  imageTag: $(Build.BuildId)
+  acrServiceConnection: rgacrdev01
 
 stages:
 - stage: Build
-  displayName: Build stage
+  displayName: Build Docker Image
   jobs:
   - job: Build
-    displayName: Build job
+    displayName: Build and Push Image
     pool:
       vmImage: ubuntu-latest
 
     steps:
-    - task: Docker@2
-      inputs:
-        containerRegistry: 'rgacrdev01'
-        repository: 'app1nginx'
-        command: 'buildAndPush'
-        Dockerfile: '**/Dockerfile'
-        tags: | 
-          $(tag) 
-          $(latestTag)
+    # Debug (optional – helps catch whitespace issues)
+    - script: |
+        echo "Image Name  : $(imageName)"
+        echo "Image Tag   : $(imageTag)"
+      displayName: Debug image values
 
+    # Build and Push Docker Image
+    - task: Docker@2
+      displayName: Build and Push to ACR
+      inputs:
+        containerRegistry: $(acrServiceConnection)
+        repository: $(imageName)
+        command: buildAndPush
+        Dockerfile: '**/Dockerfile'
+        tags: |
+          $(imageTag)
+          latest
+
+    # Copy Kubernetes manifests (YAMLs)
     - task: CopyFiles@2
+      displayName: Copy Kubernetes manifests
       inputs:
         SourceFolder: '$(System.DefaultWorkingDirectory)'
-        Contents: '**'
+        Contents: |
+          **/*.yaml
+          **/*.yml
         TargetFolder: '$(Build.ArtifactStagingDirectory)'
         OverWrite: true
 
+    # Publish manifests as pipeline artifact
     - task: PublishBuildArtifacts@1
-      displayName: Publish manifests
+      displayName: Publish kube manifests
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'kube-manifests'
