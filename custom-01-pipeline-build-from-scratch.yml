@@ -17,12 +17,12 @@ stages:
     steps:
     - task: Docker@2
       inputs:
-        containerRegistry: 'rg-webapp-01'
+        containerRegistry: 'rgacrdev01'
         repository: 'app1nginx'
         command: 'buildAndPush'
         Dockerfile: '**/Dockerfile'
         tags: | 
-          $(tag)
+          $(tag) 
           $(latestTag)
 
     - task: CopyFiles@2
